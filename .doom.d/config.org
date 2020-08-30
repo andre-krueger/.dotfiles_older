@@ -1,0 +1,31 @@
+#+PROPERTY: header-args :tangle-mode (identity #o444)
+
+#+BEGIN_SRC elisp
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+(setq user-full-name "André Krüger")
+(setq doom-theme 'doom-one)
+(setq org-directory "~/org/")
+(setq display-line-numbers-type 'relative)
+(setq +format-on-save-enabled-modes t)
+#+END_SRC
+
+Helper function for dealing with os dependent tangling.
+#+BEGIN_SRC elisp
+(cl-defun to (path &optional (predicate t))
+  (if (null predicate)
+      "no"
+    (expand-file-name path (getenv "HOME"))))
+#+END_SRC
+
+Tange dotfiles automatically on save.
+#+BEGIN_SRC elisp
+(defun tangle-dotfiles ()
+  (and (file-in-directory-p
+        buffer-file-name (file-name-directory (concat "~/.dotfiles" "dotfiles.org")))
+       (org-babel-tangle)))
+
+(defun enable-tangle-dotfiles ()
+  (add-hook 'after-save-hook #'tangle-dotfiles nil 'local))
+
+(add-hook 'org-mode-hook #'enable-tangle-dotfiles)
+#+END_SRC

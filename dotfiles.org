@@ -1,0 +1,68 @@
+#+PROPERTY: header-args :tangle-mode (identity #o444) :padline no
+#+OPTIONS: toc:2
+#+TITLE: Dotfiles
+* Table of Contents :TOC:
+- [[#emacs][Emacs]]
+- [[#bash][Bash]]
+  - [[#bashunderprofile][.bash\under{}profile]]
+  - [[#bashrc][.bashrc]]
+- [[#git][Git]]
+  - [[#gitconfig][.gitconfig]]
+- [[#npm][NPM]]
+  - [[#npmrc][.npmrc]]
+- [[#gpg][GPG]]
+  - [[#gpg-agentconf][gpg-agent.conf]]
+
+* Emacs
+[[file:.doom.d/config.org][Emacs config]]
+
+* Bash
+These files are tangled only on Linux systems.
+** .bash\under{}profile
+#+BEGIN_SRC bash :tangle (to ".bash_profile" IS-LINUX)
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+export PATH="$HOME/.cargo/bin:$HOME/.emacs.d/bin:$HOME/.local/bin:$PATH"
+#+END_SRC
+** .bashrc
+#+BEGIN_SRC bash :tangle (to ".bashrc" IS-LINUX)
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+	PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+#+END_SRC
+* Git
+** .gitconfig
+#+BEGIN_SRC conf :tangle (to ".gitconfig")
+[pull]
+	rebase = true
+[user]
+	name = André Krüger
+	useConfigOnly = true
+[commit]
+	gpgsign = true
+#+END_SRC
+Only for Windows.
+#+BEGIN_SRC conf :tangle (to ".gitconfig" IS-WINDOWS)
+[core]
+	sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
+[gpg]
+	program = C:/Program Files (x86)/gnupg/bin/gpg.exe
+#+END_SRC
+* NPM
+** .npmrc
+#+BEGIN_SRC conf :tangle (to ".npmrc")
+save-exact=true
+#+END_SRC
+* GPG
+** gpg-agent.conf
+Needed for the agent to work under macOS.
+#+BEGIN_SRC conf :tangle (to ".gnupg/gpg-agent.conf" IS-MAC))
+pinentry-program /usr/local/bin/pinentry-mac
+#+END_SRC
