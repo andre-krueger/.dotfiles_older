@@ -3,40 +3,18 @@
 #+TITLE: Dotfiles
 * Table of Contents :TOC:
 - [[#emacs][Emacs]]
-- [[#bash][Bash]]
-  - [[#bashunderprofile][.bash\under{}profile]]
-  - [[#bashrc][.bashrc]]
 - [[#git][Git]]
   - [[#gitconfig][.gitconfig]]
+- [[#bash][Bash]]
+  - [[#bashrc][.bashrc]]
 - [[#npm][NPM]]
   - [[#npmrc][.npmrc]]
-- [[#gpg][GPG]]
-  - [[#gpg-agentconf][gpg-agent.conf]]
+- [[#jetbrains][Jetbrains]]
+  - [[#ideavimrc][.ideavimrc]]
+- [[#local-variables][Local Variables]]
 
 * Emacs
 [[file:.doom.d/config.org][Emacs config]]
-
-* Bash
-These files are tangled only on Linux systems.
-** .bash\under{}profile
-#+BEGIN_SRC bash :tangle (to ".bash_profile" IS-LINUX)
-if [ -f ~/.bashrc ]; then
-	. ~/.bashrc
-fi
-
-export PATH="$HOME/.cargo/bin:$HOME/.emacs.d/bin:$HOME/.local/bin:$PATH"
-#+END_SRC
-** .bashrc
-#+BEGIN_SRC bash :tangle (to ".bashrc" IS-LINUX)
-if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
-fi
-
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
-	PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-fi
-export PATH
-#+END_SRC
 * Git
 ** .gitconfig
 #+BEGIN_SRC conf :tangle (to ".gitconfig")
@@ -55,14 +33,51 @@ Only for Windows.
 [gpg]
 	program = C:/Program Files (x86)/gnupg/bin/gpg.exe
 #+END_SRC
+* Bash
+** .bashrc
+#+BEGIN_SRC conf :tangle (to ".bashrc" IS-LINUX)
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+source "$HOME/.cargo/env"
+#+END_SRC
 * NPM
 ** .npmrc
 #+BEGIN_SRC conf :tangle (to ".npmrc")
 save-exact=true
 #+END_SRC
-* GPG
-** gpg-agent.conf
-Needed for the agent to work under macOS.
-#+BEGIN_SRC conf :tangle (to ".gnupg/gpg-agent.conf" IS-MAC))
-pinentry-program /usr/local/bin/pinentry-mac
+* Jetbrains
+** .ideavimrc
+#+BEGIN_SRC conf :tangle (to ".ideavimrc" IS-LINUX)
+set commentary
+set relativenumber
+let mapleader="\<Space>"
+nmap <leader>. :action GotoDeclaration<cr>
+nmap <leader>, :action Back<cr>
+set clipboard+=unnamed
+set ignorecase
+set smartcase
 #+END_SRC
+* Local Variables
+# Local Variables:
+# eval: (add-hook 'after-save-hook (lambda ()(org-babel-tangle)) nil t)
+# End:
