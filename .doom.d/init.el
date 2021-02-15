@@ -47,6 +47,7 @@
        markdown
        org
        (rust +lsp)
+       (nix +lsp)
        sh
        (web +lsp)
 

@@ -11,6 +11,8 @@
   - [[#npmrc][.npmrc]]
 - [[#jetbrains][Jetbrains]]
   - [[#ideavimrc][.ideavimrc]]
+- [[#systemd][Systemd]]
+  - [[#syncthingservice][syncthing.service]]
 - [[#local-variables][Local Variables]]
 
 * Emacs
@@ -25,13 +27,18 @@
 	useConfigOnly = true
 [commit]
 	gpgsign = true
+[core]
+    excludesFile = "~/.gitignore"
 #+END_SRC
 Only for Windows.
 #+BEGIN_SRC conf :tangle (to ".gitconfig" IS-WINDOWS)
-[core]
 	sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 [gpg]
 	program = C:/Program Files (x86)/gnupg/bin/gpg.exe
+#+END_SRC
+** .gitignore
+#+BEGIN_SRC conf :tangle (to ".gitignore")
+.envrc
 #+END_SRC
 * Bash
 ** .bashrc
@@ -58,7 +65,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 # export SYSTEMD_PAGER=
 
 # User specific aliases and functions
-source "$HOME/.cargo/env"
+eval "$(direnv hook bash)"
 #+END_SRC
 * NPM
 ** .npmrc
@@ -76,6 +83,28 @@ nmap <leader>, :action Back<cr>
 set clipboard+=unnamed
 set ignorecase
 set smartcase
+#+END_SRC
+* Systemd
+** syncthing.service
+#+BEGIN_SRC conf :tangle (to ".config/systemd/user/syncthing.service" IS-LINUX)
+[Unit]
+Description=Syncthing - Open Source Continuous File Synchronization
+Documentation=man:syncthing(1)
+
+[Service]
+ExecStart=/usr/bin/syncthing --no-browser --no-restart --logflags=0
+Restart=on-failure
+RestartSec=5
+SuccessExitStatus=3 4
+RestartForceExitStatus=3 4
+
+# Hardening
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target
 #+END_SRC
 * Local Variables
 # Local Variables:
