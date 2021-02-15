@@ -38,18 +38,12 @@
        lsp
        magit
 
-       :os
-       (:if IS-MAC macos)
-
        :lang
        emacs-lisp
-       (javascript +lsp)
        markdown
        org
-       (rust +lsp)
        (nix +lsp)
        sh
-       (web +lsp)
 
        :config
        literate
