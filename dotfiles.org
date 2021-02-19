@@ -5,6 +5,7 @@
 - [[#emacs][Emacs]]
 - [[#git][Git]]
   - [[#gitconfig][.gitconfig]]
+  - [[#gitignore][.gitignore]]
 - [[#bash][Bash]]
   - [[#bashrc][.bashrc]]
 - [[#npm][NPM]]
@@ -39,6 +40,7 @@ Only for Windows.
 ** .gitignore
 #+BEGIN_SRC conf :tangle (to ".gitignore")
 .envrc
+.idea
 #+END_SRC
 * Bash
 ** .bashrc
@@ -65,6 +67,21 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 # export SYSTEMD_PAGER=
 
 # User specific aliases and functions
+function studio {
+  local directory="${1:-android}"
+  nohup ~/.local/bin/studio "$directory" > /tmp/studio.out &
+}
+
+function webstorm {
+  local directory="${1:-.}"
+  nohup ~/.local/bin/webstorm "$directory" > /tmp/webstorm.out &
+}
+
+function clion {
+  local directory="${1:-.}"
+  nohup ~/.local/bin/clion "$directory" > /tmp/clion.out &
+}
+
 eval "$(direnv hook bash)"
 #+END_SRC
 * NPM
