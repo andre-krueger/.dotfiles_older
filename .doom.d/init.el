@@ -34,6 +34,7 @@
 
        :tools
        (eval +overlay)
+       direnv
        lookup
        lsp
        magit
