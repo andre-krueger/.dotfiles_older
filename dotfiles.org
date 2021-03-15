@@ -8,6 +8,7 @@
   - [[#gitignore][.gitignore]]
 - [[#bash][Bash]]
   - [[#bashrc][.bashrc]]
+  - [[#bash_profile][.bash_profile]]
 - [[#npm][NPM]]
   - [[#npmrc][.npmrc]]
 - [[#jetbrains][Jetbrains]]
@@ -89,6 +90,14 @@ function clion {
 
 eval "$(direnv hook bash)"
 #+END_SRC
+** .bash_profile
+#+BEGIN_SRC conf :tangle (to ".bash_profile" IS-LINUX)
+if [ -e /var/home/andre/.nix-profile/etc/profile.d/nix.sh ]; then . /var/home/andre/.nix-profile/etc/profile.d/nix.sh; fi
+
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+#+END_SRC
 * NPM
 ** .npmrc
 #+BEGIN_SRC conf :tangle (to ".npmrc")
@@ -132,6 +141,12 @@ WantedBy=default.target
 ** .direnvrc
 #+BEGIN_SRC conf :tangle (to ".direnvrc" IS-LINUX)
 source $HOME/.nix-profile/share/nix-direnv/direnvrc
+#+END_SRC
+Fix to make GTK programs outside from nix work in a nix-shell.
+#+BEGIN_SRC conf :tangle (to ".direnvrc" IS-LINUX)
+use_nix_custom() {
+  use_nix --keep XDG_DATA_DIRS
+}
 #+END_SRC
 * Nix
 ** nix.conf
