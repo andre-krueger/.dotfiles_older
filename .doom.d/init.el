@@ -24,7 +24,7 @@
        snippets
 
        :emacs
-       dire
+       dired
        electric
        undo
        vc
