@@ -19,7 +19,6 @@
   - [[#direnvrc][.direnvrc]]
 - [[#nix][Nix]]
   - [[#nixconf][nix.conf]]
-- [[#local-variables][Local Variables]]
 
 * Emacs
 [[file:.doom.d/config.org][Emacs config]]
@@ -92,7 +91,7 @@ eval "$(direnv hook bash)"
 #+END_SRC
 ** .bash_profile
 #+BEGIN_SRC conf :tangle (to ".bash_profile" IS-LINUX)
-if [ -e /var/home/andre/.nix-profile/etc/profile.d/nix.sh ]; then . /var/home/andre/.nix-profile/etc/profile.d/nix.sh; fi
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
 
 if [ -f ~/.bashrc ]; then
     . ~/.bashrc
@@ -154,7 +153,7 @@ use_nix_custom() {
 keep-derivations = true
 keep-outputs = true
 #+END_SRC
-* Local Variables
-# Local Variables:
-# eval: (add-hook 'after-save-hook (lambda ()(org-babel-tangle)) nil t)
-# End:
+* Local Variables :noexport:
+Local Variables:
+eval: (add-hook 'after-save-hook (lambda ()(org-babel-tangle)) nil t)
+End:
