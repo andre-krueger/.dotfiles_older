@@ -1,4 +1,4 @@
-#+PROPERTY: header-args :tangle-mode (identity #o444) :padline no
+#+PROPERTY: header-args :padline no
 #+OPTIONS: toc:2
 #+TITLE: Dotfiles
 * Table of Contents :TOC:
@@ -13,8 +13,8 @@
   - [[#npmrc][.npmrc]]
 - [[#jetbrains][Jetbrains]]
   - [[#ideavimrc][.ideavimrc]]
-- [[#systemd][Systemd]]
-  - [[#syncthingservice][syncthing.service]]
+- [[#sound][Sound]]
+  - [[#toggle][toggle]]
 - [[#direnv][Direnv]]
   - [[#direnvrc][.direnvrc]]
 - [[#nix][Nix]]
@@ -114,27 +114,21 @@ set clipboard+=unnamed
 set ignorecase
 set smartcase
 #+END_SRC
-* Systemd
-** syncthing.service
-#+BEGIN_SRC conf :mkdirp yes :tangle (to ".config/systemd/user/syncthing.service" IS-LINUX)
-[Unit]
-Description=Syncthing - Open Source Continuous File Synchronization
-Documentation=man:syncthing(1)
+* Sound
+** toggle
+#+BEGIN_SRC sh :shebang #!/bin/sh :tangle (to "toggle.sh" IS-LINUX)
+HEADPHONE="active profile: <output:analog-stereo+input:analog-stereo>"
+SPEAKER="active profile: <output:iec958-stereo>"
+OUTPUT=$(pacmd list-cards | grep "active profile" | tail -n1 | xargs)
 
-[Service]
-ExecStart=/usr/bin/syncthing --no-browser --no-restart --logflags=0
-Restart=on-failure
-RestartSec=5
-SuccessExitStatus=3 4
-RestartForceExitStatus=3 4
+if [ "$OUTPUT" = "$HEADPHONE" ]
+then
+  pacmd set-card-profile 1 output:iec958-stereo
+elif [ "$OUTPUT" = "$SPEAKER" ]
+then
+  pacmd set-card-profile 1 output:analog-stereo+input:analog-stereo
+fi
 
-# Hardening
-SystemCallArchitectures=native
-MemoryDenyWriteExecute=true
-NoNewPrivileges=true
-
-[Install]
-WantedBy=default.target
 #+END_SRC
 * Direnv
 ** .direnvrc
