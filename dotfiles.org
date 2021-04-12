@@ -8,7 +8,12 @@
   - [[#homenix][home.nix]]
 - [[#i3][i3]]
   - [[#config][config]]
-- [[#ranger][Ranger]]
+- [[#rofi][Rofi]]
+  - [[#configrasi][config.rasi]]
+- [[#desktop-entries][Desktop entries]]
+  - [[#ranger][ranger]]
+  - [[#ncmpcpp][ncmpcpp]]
+- [[#ranger-1][Ranger]]
   - [[#rcconf][rc.conf]]
 - [[#npm][NPM]]
   - [[#npmrc][.npmrc]]
@@ -45,6 +50,10 @@
     #"/nix/var/nix/profiles/per-user/root/channels"
   ];
 
+  virtualisation.docker.enable = true;
+  virtualisation.docker.extraOptions = ''
+    --iptables=false
+        '';
   programs.adb.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   # Use the systemd-boot EFI boot loader.
@@ -80,9 +89,11 @@
   services.xserver = {
     windowManager.i3.package = pkgs.i3-gaps;
     windowManager.i3.enable = true;
+    desktopManager.gnome3.enable = true;
 
     displayManager = {
-      defaultSession = "none+i3";
+      defaultSession = "gnome";
+      sessionCommands = "/home/andre/.local/bin/xrandr.sh";
       autoLogin = {
         enable = true;
         user = "andre";
@@ -109,7 +120,7 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-
+  # networking.resolvconf.dnsExtensionMechanism = false;
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.andre = {
     isNormalUser = true;
@@ -144,7 +155,11 @@
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22000 8081 ];
+  networking.firewall.allowedTCPPorts = [ 22000 ];
+  networking.firewall.allowedTCPPortRanges = [{
+    from = 8000;
+    to = 9000;
+  }];
   networking.firewall.allowedUDPPorts = [ 22000 21027 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -191,16 +206,13 @@
   };
   programs.feh.enable = true;
 
-  xsession.profileExtra = ''
-    xrandr.sh
-        '';
-  xsession.enable = true;
-  xsession.windowManager.command = "i3";
-  xsession.pointerCursor = {
-    package = pkgs.vanilla-dmz;
-    name = "Vanilla-DMZ";
-    size = 48;
-  };
+  # xsession.enable = true;
+  # # xsession.windowManager.command = "i3";
+  # xsession.pointerCursor = {
+  #   package = pkgs.vanilla-dmz;
+  #   name = "Vanilla-DMZ";
+  #   size = 48;
+  # };
   xresources.properties = { "Xft.dpi" = 192; };
   programs.alacritty = {
     enable = true;
@@ -238,6 +250,9 @@
     };
   };
   home.packages = with pkgs; [
+    pandoc
+    postman
+    rofi
     glib
     ueberzug
     ranger
@@ -254,9 +269,18 @@
     xidlehook
     jetbrains.webstorm
     android-studio
+    jetbrains.clion
+    jetbrains.datagrip
+    jetbrains.goland
     libsecret
     flac
     shfmt
+    docker-compose
+    (pkgs.makeDesktopItem {
+      name = "ncmpcpp";
+      desktopName = "Music";
+      exec = "alacritty --title Music -e ncmpcpp";
+    })
   ];
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -288,11 +312,11 @@ font pango:monospace 8
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
- 
-for_window [title=".*Emulator.*"] floating enable
+exec_always --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
-exec --no-startup-id feh --bg-fill Downloads/background.jpg
+# for_window [title=".*Emulator.*"] floating enable
+
+exec_always --no-startup-id feh --bg-fill Downloads/background.jpg
 
 #floating_minimum_size 640 x 480
 #floating_maximum_size 800 x 600
@@ -306,10 +330,6 @@ exec --no-startup-id xidlehook \
   --timer 900 \
     'systemctl suspend' \
     ''
-
-#floating_maximum_size 640 x 480
-exec --no-startup-id i3-msg 'workspace 1; exec firefox'
-exec --no-startup-id i3-msg 'workspace 2; exec keepassxc'
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -327,9 +347,9 @@ bindsym $mod+Return exec alacritty
 # kill focused window
 bindsym $mod+Shift+Q kill
 
-bindsym $mod+t exec --no-startup-id toggle-audio-output.sh
+bindsym $mod+t exec --no-startup-id ~/.local/bin/toggle-audio-output.sh
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run
+bindsym $mod+d exec --no-startup-id rofi -show combi
 # A more modern dmenu replacement is rofi:
 # bindcode $mod+40 exec "rofi -modi drun,run -show drun"
 # There also is i3-dmenu-desktop which only displays applications shipping a
@@ -411,6 +431,10 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+for_window [title="(Music|Files)"] move scratchpad; scratchpad show; sticky enable
+bindsym $mod+F1 [title="Files"] scratchpad show; sticky enable
+bindsym $mod+F2 [title="Music"] scratchpad show; sticky enable
+
 # reload the configuration file
 bindsym $mod+Shift+adiaeresis reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
@@ -460,6 +484,184 @@ bar {
     status_command i3status
 }
 #+END_SRC
+* Rofi
+** config.rasi
+#+BEGIN_SRC conf :mkdirp yes :tangle (to ".config/rofi/config.rasi" IS-LINUX)
+configuration {
+/*	modi: "window,run,ssh";*/
+/*	width: 50;*/
+	lines: 7;
+/*	columns: 1;*/
+/*	font: "mono 12";*/
+	bw: 3;
+/*	location: 0;*/
+	padding: 10;
+/*	yoffset: 0;*/
+/*	xoffset: 0;*/
+/*	fixed-num-lines: true;*/
+/*	show-icons: false;*/
+	terminal: "alacritty";
+/*	ssh-client: "ssh";*/
+/*	ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";*/
+/*	run-command: "{cmd}";*/
+/*	run-list-command: "";*/
+/*	run-shell-command: "{terminal} -e {cmd}";*/
+/*	window-command: "wmctrl -i -R {window}";*/
+/*	window-match-fields: "all";*/
+/*	icon-theme: ;*/
+/*	drun-match-fields: "name,generic,exec,categories,keywords";*/
+/*	drun-categories: ;*/
+/*	drun-show-actions: false;*/
+/*	drun-display-format: "{name} [<span weight='light' size='small'><i>({generic})</i></span>]";*/
+/*	drun-url-launcher: "xdg-open";*/
+/*	disable-history: false;*/
+/*	ignored-prefixes: "";*/
+/*	sort: false;*/
+/*	sorting-method: "normal";*/
+/*	case-sensitive: false;*/
+/*	cycle: true;*/
+/*	sidebar-mode: false;*/
+/*	eh: 1;*/
+/*	auto-select: false;*/
+/*	parse-hosts: false;*/
+/*	parse-known-hosts: true;*/
+	combi-modi: "window,drun";
+/*	matching: "normal";*/
+/*	tokenize: true;*/
+/*	m: "-5";*/
+/*	line-margin: 2;*/
+/*	line-padding: 1;*/
+/*	filter: ;*/
+/*	separator-style: "dash";*/
+/*	hide-scrollbar: false;*/
+/*	fullscreen: false;*/
+/*	fake-transparency: false;*/
+	dpi: 192;
+/*	threads: 0;*/
+/*	scrollbar-width: 8;*/
+/*	scroll-method: 0;*/
+/*	fake-background: "screenshot";*/
+/*	window-format: "{w}    {c}   {t}";*/
+/*	click-to-exit: true;*/
+/*	show-match: true;*/
+/*	theme: ;*/
+/*	color-normal: ;*/
+/*	color-urgent: ;*/
+/*	color-active: ;*/
+/*	color-window: ;*/
+/*	max-history-size: 25;*/
+/*	combi-hide-mode-prefix: false;*/
+/*	matching-negate-char: '-' /* unsupported */;*/
+/*	cache-dir: ;*/
+/*	window-thumbnail: false;*/
+/*	drun-use-desktop-cache: false;*/
+/*	drun-reload-desktop-cache: false;*/
+/*	normalize-match: false;*/
+/*	pid: "/run/user/1000/rofi.pid";*/
+/*	display-window: ;*/
+/*	display-windowcd: ;*/
+/*	display-run: ;*/
+/*	display-ssh: ;*/
+/*	display-drun: ;*/
+/*	display-combi: ;*/
+/*	display-keys: ;*/
+/*	display-file-browser: ;*/
+/*	kb-primary-paste: "Control+V,Shift+Insert";*/
+/*	kb-secondary-paste: "Control+v,Insert";*/
+/*	kb-clear-line: "Control+w";*/
+/*	kb-move-front: "Control+a";*/
+/*	kb-move-end: "Control+e";*/
+/*	kb-move-word-back: "Alt+b,Control+Left";*/
+/*	kb-move-word-forward: "Alt+f,Control+Right";*/
+/*	kb-move-char-back: "Left,Control+b";*/
+/*	kb-move-char-forward: "Right,Control+f";*/
+/*	kb-remove-word-back: "Control+Alt+h,Control+BackSpace";*/
+/*	kb-remove-word-forward: "Control+Alt+d";*/
+/*	kb-remove-char-forward: "Delete,Control+d";*/
+/*	kb-remove-char-back: "BackSpace,Shift+BackSpace,Control+h";*/
+/*	kb-remove-to-eol: "Control+k";*/
+/*	kb-remove-to-sol: "Control+u";*/
+/*	kb-accept-entry: "Control+j,Control+m,Return,KP_Enter";*/
+/*	kb-accept-custom: "Control+Return";*/
+/*	kb-accept-alt: "Shift+Return";*/
+/*	kb-delete-entry: "Shift+Delete";*/
+/*	kb-mode-next: "Shift+Right,Control+Tab";*/
+/*	kb-mode-previous: "Shift+Left,Control+ISO_Left_Tab";*/
+/*	kb-row-left: "Control+Page_Up";*/
+/*	kb-row-right: "Control+Page_Down";*/
+/*	kb-row-up: "Up,Control+p,ISO_Left_Tab";*/
+/*	kb-row-down: "Down,Control+n";*/
+/*	kb-row-tab: "Tab";*/
+/*	kb-page-prev: "Page_Up";*/
+/*	kb-page-next: "Page_Down";*/
+/*	kb-row-first: "Home,KP_Home";*/
+/*	kb-row-last: "End,KP_End";*/
+/*	kb-row-select: "Control+space";*/
+/*	kb-screenshot: "Alt+S";*/
+/*	kb-ellipsize: "Alt+period";*/
+/*	kb-toggle-case-sensitivity: "grave,dead_grave";*/
+/*	kb-toggle-sort: "Alt+grave";*/
+/*	kb-cancel: "Escape,Control+g,Control+bracketleft";*/
+/*	kb-custom-1: "Alt+1";*/
+/*	kb-custom-2: "Alt+2";*/
+/*	kb-custom-3: "Alt+3";*/
+/*	kb-custom-4: "Alt+4";*/
+/*	kb-custom-5: "Alt+5";*/
+/*	kb-custom-6: "Alt+6";*/
+/*	kb-custom-7: "Alt+7";*/
+/*	kb-custom-8: "Alt+8";*/
+/*	kb-custom-9: "Alt+9";*/
+/*	kb-custom-10: "Alt+0";*/
+/*	kb-custom-11: "Alt+exclam";*/
+/*	kb-custom-12: "Alt+at";*/
+/*	kb-custom-13: "Alt+numbersign";*/
+/*	kb-custom-14: "Alt+dollar";*/
+/*	kb-custom-15: "Alt+percent";*/
+/*	kb-custom-16: "Alt+dead_circumflex";*/
+/*	kb-custom-17: "Alt+ampersand";*/
+/*	kb-custom-18: "Alt+asterisk";*/
+/*	kb-custom-19: "Alt+parenleft";*/
+/*	kb-select-1: "Super+1";*/
+/*	kb-select-2: "Super+2";*/
+/*	kb-select-3: "Super+3";*/
+/*	kb-select-4: "Super+4";*/
+/*	kb-select-5: "Super+5";*/
+/*	kb-select-6: "Super+6";*/
+/*	kb-select-7: "Super+7";*/
+/*	kb-select-8: "Super+8";*/
+/*	kb-select-9: "Super+9";*/
+/*	kb-select-10: "Super+0";*/
+/*	ml-row-left: "ScrollLeft";*/
+/*	ml-row-right: "ScrollRight";*/
+/*	ml-row-up: "ScrollUp";*/
+/*	ml-row-down: "ScrollDown";*/
+/*	me-select-entry: "MousePrimary";*/
+/*	me-accept-entry: "MouseDPrimary";*/
+/*	me-accept-custom: "Control+MouseDPrimary";*/
+}
+#+END_SRC
+* Desktop entries
+** ranger
+#+BEGIN_SRC conf :mkdirp yes :tangle (to ".local/share/applications/ranger.desktop" IS-LINUX)
+[Desktop Entry]
+Type=Application
+Name=Files
+Comment=Launches the ranger file manager
+Icon=utilities-terminal
+Terminal=false
+Exec=alacritty --title Files -e ranger
+Categories=ConsoleOnly;System;FileTools;FileManager
+MimeType=inode/directory;
+Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
+#+END_SRC
+** ncmpcpp
+#+BEGIN_SRC conf :mkdirp yes :tangle (to ".local/share/applications/ncmpcpp.desktop" IS-LINUX)
+[Desktop Entry]
+Exec=alacritty --title Music -e ncmpcpp
+Name=Music
+Terminal=false
+Type=Application
+#+END_SRC
 * Ranger
 ** rc.conf
 #+BEGIN_SRC conf :mkdirp yes :tangle (to ".config/ranger/rc.conf" IS-LINUX)
@@ -481,6 +683,7 @@ set relativenumber
 let mapleader="\<Space>"
 nmap <leader>. :action GotoDeclaration<cr>
 nmap <leader>, :action Back<cr>
+nmap <leader>fs :action SaveAll<cr>
 set clipboard+=unnamed
 set ignorecase
 set smartcase
@@ -504,6 +707,7 @@ fi
 * Bash
 ** bashrc
 #+BEGIN_SRC sh :mkdirp yes :tangle (to ".dotfiles/generated/bashrc" IS-LINUX)
+export QEMU_AUDIO_DRV=none
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH+=:$HOME/.local/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 
@@ -521,12 +725,17 @@ function clion {
 	local directory="${1:-.}"
 	nohup clion "$directory" >/tmp/clion.out &
 }
+
+function goland {
+	local directory="${1:-.}"
+	nohup goland "$directory" >/tmp/goland.out &
+}
 #+END_SRC
 * X11
 ** xrandr.sh
 #+BEGIN_SRC sh :shebang #!/bin/sh :mkdirp yes :tangle (to ".local/bin/xrandr.sh" IS-LINUX)
-xrandr --output DisplayPort-1 --primary
-xrandr --output DisplayPort-2 --right-of DisplayPort-1 --rotate left
+xrandr --output DisplayPort-0 --primary --output DisplayPort-1 --auto --right-of DisplayPort-0 --rotate left
+exit 0
 #+END_SRC
 * Git
 ** .gitconfig
