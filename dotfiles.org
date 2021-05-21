@@ -7,8 +7,6 @@
   - [[#npmrc][.npmrc]]
 - [[#jetbrains][Jetbrains]]
   - [[#ideavimrc][.ideavimrc]]
-- [[#sound][Sound]]
-  - [[#toggle][toggle]]
 - [[#test][test]]
 - [[#autostart][autostart]]
 - [[#bash][Bash]]
@@ -42,20 +40,6 @@ set clipboard+=unnamed
 set ignorecase
 set smartcase
 #+END_SRC
-* Sound
-** toggle
-#+BEGIN_SRC sh :shebang #!/bin/sh :tangle (to ".local/bin/toggle-audio-output.sh" IS-LINUX)
-HEADPHONE="active profile: <output:analog-stereo+input:analog-stereo>"
-SPEAKER="active profile: <output:iec958-stereo>"
-OUTPUT=$(pacmd list-cards | grep "active profile" | tail -n1 | xargs)
-
-if [ "$OUTPUT" = "$HEADPHONE" ]
-then
-  pacmd set-card-profile 1 output:iec958-stereo
-elif [ "$OUTPUT" = "$SPEAKER" ]
-then
-  pacmd set-card-profile 1 output:analog-stereo+input:analog-stereo
-fi
 * test
 #+END_SRC
 #+BEGIN_SRC sh :shebang #!/bin/sh :tangle (to ".local/bin/kill-gnome-keyring-daemon.sh" IS-LINUX)
@@ -108,8 +92,8 @@ Exec=/usr/bin/keepassxc
 
 
 #+BEGIN_SRC conf :tangle (to ".gnupg/gpg-agent.conf" IS-LINUX)
-default-cache-ttl 1
-max-cache-ttl 1
+default-cache-ttl 0
+max-cache-ttl 0
 #+END_SRC
 
 
