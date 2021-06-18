@@ -14,6 +14,7 @@
 - [[#git][Git]]
   - [[#gitconfig][.gitconfig]]
   - [[#gitignore][.gitignore]]
+  - [[#avd][AVD]]
 
 * Emacs
 [[file:.doom.d/config.org][Emacs config]]
@@ -42,7 +43,8 @@ set smartcase
 #+END_SRC
 * test
 #+END_SRC
-#+BEGIN_SRC sh :shebang #!/bin/sh :tangle (to ".local/bin/kill-gnome-keyring-daemon.sh" IS-LINUX)
+Disabled for now
+#+BEGIN_SRC sh :shebang #!/bin/sh :tangle (to ".local/bin/kill-gnome-keyring-daemon.sh" nil)
 #!/usr/bin/env bash
 
 #killAndWait() {
@@ -53,14 +55,16 @@ set smartcase
 pkill gnome-keyring
 #+END_SRC
 * autostart
-#+BEGIN_SRC conf :tangle (to ".config/autostart/kill-gnome-keyring-daemon.desktop" IS-LINUX)
+Disabled for now
+#+BEGIN_SRC conf :tangle (to ".config/autostart/kill-gnome-keyring-daemon.desktop" nil)
 [Desktop Entry]
 Name=Kill gnome-keyring-daemon
 Type=Application
 Exec=/home/andre/.local/bin/kill-gnome-keyring-daemon.sh
 Terminal=false  
 #+END_SRC
-#+BEGIN_SRC conf :tangle (to ".config/autostart/gnome-keyring-ssh.desktop" IS-LINUX)
+Disabled for now
+#+BEGIN_SRC conf :tangle (to ".config/autostart/gnome-keyring-ssh.desktop" nil)
 [Desktop Entry]
 Type=Application
 Hidden=true
@@ -83,15 +87,16 @@ keep-outputs = true
 source $HOME/.nix-profile/share/nix-direnv/direnvrc 
 #+END_SRC
 
-
-#+BEGIN_SRC conf :tangle (to ".local/share/dbus-1/services/org.freedesktop.secrets.service" IS-LINUX)
+Disabled for now
+#+BEGIN_SRC conf :tangle (to ".local/share/dbus-1/services/org.freedesktop.secrets.service" nil)
 [D-BUS Service]
 Name=org.freedesktop.secrets
 Exec=/usr/bin/keepassxc 
 #+END_SRC
 
 
-#+BEGIN_SRC conf :tangle (to ".gnupg/gpg-agent.conf" IS-LINUX)
+Disabled for now
+#+BEGIN_SRC conf :tangle (to ".gnupg/gpg-agent.conf" nil)
 default-cache-ttl 0
 max-cache-ttl 0
 #+END_SRC
@@ -207,6 +212,11 @@ Only for Windows.
 .envrc
 .idea
 .direnv
+#+END_SRC
+** AVD
+Maybe fixes the avd freeze after some time
+#+BEGIN_SRC conf :tangle (to ".android/advancedFeatures.ini")
+QuickbootFileBacked = off
 #+END_SRC
 * Local Variables :noexport:
 Local Variables:
