@@ -69,23 +69,6 @@ Disabled for now
 Type=Application
 Hidden=true
 #+END_SRC
-#+BEGIN_SRC conf :tangle (to ".local/share/applications/Postman.desktop" IS-LINUX)
-[Desktop Entry]
-Encoding=UTF-8
-Name=Postman
-Exec=/home/andre/.local/bin/postman/Postman %U
-Icon=/home/andre/.local/bin/postman/app/resources/app/assets/icon.png
-Terminal=false
-Type=Application
-Categories=Development; 
-#+END_SRC
-#+BEGIN_SRC conf :tangle (to ".config/nix.conf" IS-LINUX)
-keep-derivations = true
-keep-outputs = true 
-#+END_SRC
-#+BEGIN_SRC conf :tangle (to ".direnvrc" IS-LINUX)
-source $HOME/.nix-profile/share/nix-direnv/direnvrc 
-#+END_SRC
 
 Disabled for now
 #+BEGIN_SRC conf :tangle (to ".local/share/dbus-1/services/org.freedesktop.secrets.service" nil)
@@ -114,8 +97,7 @@ fi
 # User specific environment and startup programs
 
 eval `ssh-agent`
-if [ -e /home/andre/.nix-profile/etc/profile.d/nix.sh ]; then . /home/andre/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-source "$HOME/.cargo/env"   
+source "$HOME/.cargo/env"
 #+END_SRC
 #+BEGIN_SRC conf :tangle (to ".profile" IS-LINUX)
 source "$HOME/.cargo/env"
@@ -143,7 +125,7 @@ then
 fi
 export PATH
 
-PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$HOME/.local/bin/flipper"
+PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
 
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
@@ -177,15 +159,14 @@ function goland {
 	nohup goland "$directory" >/tmp/goland.out &
 }
 
-function flipper {
-	nohup flipper >/tmp/flipper.out &
-}
-
 
 
 unset rc
 source "$HOME/.cargo/env"
-eval "$(direnv hook bash)"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
         
 #+END_SRC
 * Git
@@ -215,7 +196,7 @@ Only for Windows.
 #+END_SRC
 ** AVD
 Maybe fixes the avd freeze after some time
-#+BEGIN_SRC conf :tangle (to ".android/advancedFeatures.ini")
+#+BEGIN_SRC conf :tangle (to ".android/advancedFeatures.ini" IS-LINUX)
 QuickbootFileBacked = off
 #+END_SRC
 * Local Variables :noexport:

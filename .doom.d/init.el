@@ -34,7 +34,6 @@
 
        :tools
        (eval +overlay)
-       direnv
        lookup
        lsp
        magit
@@ -43,7 +42,6 @@
        emacs-lisp
        markdown
        org
-       (nix +lsp)
        sh
 
        :config
