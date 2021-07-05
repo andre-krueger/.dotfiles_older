@@ -43,43 +43,33 @@ set smartcase
 #+END_SRC
 * test
 #+END_SRC
-Disabled for now
-#+BEGIN_SRC sh :shebang #!/bin/sh :tangle (to ".local/bin/kill-gnome-keyring-daemon.sh" nil)
+#+BEGIN_SRC sh :shebang #!/bin/sh :tangle (to ".local/bin/kill-gnome-keyring-daemon.sh" IS-LINUX)
 #!/usr/bin/env bash
 
-#killAndWait() {
-#  kill $1 2> /dev/null && wait $1 2> /dev/null
-#}
-
-#killAndWait $(pgrep gnome-keyring)
 pkill gnome-keyring
 #+END_SRC
 * autostart
-Disabled for now
-#+BEGIN_SRC conf :tangle (to ".config/autostart/kill-gnome-keyring-daemon.desktop" nil)
+#+BEGIN_SRC conf :tangle (to ".config/autostart/kill-gnome-keyring-daemon.desktop" IS-LINUX)
 [Desktop Entry]
 Name=Kill gnome-keyring-daemon
 Type=Application
 Exec=/home/andre/.local/bin/kill-gnome-keyring-daemon.sh
 Terminal=false  
 #+END_SRC
-Disabled for now
-#+BEGIN_SRC conf :tangle (to ".config/autostart/gnome-keyring-ssh.desktop" nil)
+#+BEGIN_SRC conf :tangle (to ".config/autostart/gnome-keyring-ssh.desktop" IS-LINUX)
 [Desktop Entry]
 Type=Application
 Hidden=true
 #+END_SRC
 
-Disabled for now
-#+BEGIN_SRC conf :tangle (to ".local/share/dbus-1/services/org.freedesktop.secrets.service" nil)
+#+BEGIN_SRC conf :tangle (to ".local/share/dbus-1/services/org.freedesktop.secrets.service" IS-LINUX)
 [D-BUS Service]
 Name=org.freedesktop.secrets
 Exec=/usr/bin/keepassxc 
 #+END_SRC
 
 
-Disabled for now
-#+BEGIN_SRC conf :tangle (to ".gnupg/gpg-agent.conf" nil)
+#+BEGIN_SRC conf :tangle (to ".gnupg/gpg-agent.conf" IS-LINUX)
 default-cache-ttl 0
 max-cache-ttl 0
 #+END_SRC
