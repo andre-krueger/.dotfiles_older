@@ -7,6 +7,7 @@
 (setq org-directory "~/org/")
 (setq display-line-numbers-type 'relative)
 (setq confirm-kill-emacs nil)
+(setq doom-font (font-spec :family "Fira Code" :size 24))
 #+END_SRC
 
 Helper function for dealing with os dependent tangling.
@@ -15,5 +16,13 @@ Helper function for dealing with os dependent tangling.
   (if (null predicate)
       "no"
     (expand-file-name path (getenv "HOME"))))
-#+END_SRC
+(setq +format-with-lsp nil)
+;; (setq web-mode-auto-close-style 2)
+;; (setq web-mode-tag-auto-close-style 2)
+(after! web-mode
+  (setq web-mode-auto-close-style 2))
+(map! :nv  "gb" #'better-jumper-jump-backward)
+(map! :nv "gf" #'better-jumper-jump-forward)
 
+
+#+END_SRC

@@ -32,10 +32,10 @@ nodeLinker: node-modules
 ** .ideavimrc
 #+BEGIN_SRC conf :tangle (to ".ideavimrc" IS-LINUX)
 set commentary
-set relativenumber
+set number relativenumber
 let mapleader="\<Space>"
-nmap <leader>. :action GotoDeclaration<cr>
-nmap <leader>, :action Back<cr>
+nmap gb :action Back<cr>
+nmap gf :action Forward<cr>
 nmap <leader>fs :action SaveAll<cr>
 set clipboard+=unnamed
 set ignorecase

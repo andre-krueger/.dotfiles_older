@@ -1,8 +1,8 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :completion
-       company
-       ivy
+       (company +childframe)
+       (ivy +icons +fuzzy)
 
        :ui
        doom
@@ -41,8 +41,10 @@
        :lang
        emacs-lisp
        markdown
-       org
-       sh
+       (org +pretty)
+       (sh +lsp)
+       (javascript +lsp)
+       (web +html +css)
 
        :config
        literate
