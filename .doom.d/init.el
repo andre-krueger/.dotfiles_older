@@ -44,7 +44,7 @@
        (org +pretty)
        (sh +lsp)
        (javascript +lsp)
-       (web +html +css)
+       (web +lsp)
 
        :config
        literate
