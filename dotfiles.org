@@ -8,6 +8,12 @@
 - [[#jetbrains][Jetbrains]]
   - [[#ideavimrc][.ideavimrc]]
 - [[#bash][Bash]]
+  - [[#env][Env]]
+  - [[#path][Path]]
+  - [[#alias][Alias]]
+  - [[#nvm][NVM]]
+  - [[#rust][Rust]]
+  - [[#bash_profile][.bash_profile]]
   - [[#bashrc][.bashrc]]
 - [[#git][Git]]
   - [[#gitconfig][.gitconfig]]
@@ -40,11 +46,41 @@ set ignorecase
 set smartcase
 #+END_SRC
 * Bash
+** Env
+#+BEGIN_SRC sh :tangle (to ".bashrc.d/0-env.sh" IS-LINUX)
+export ANDROID_HOME=$HOME/Android/Sdk
+#+END_SRC
+** Path
+#+BEGIN_SRC sh :tangle (to ".bashrc.d/1-path.sh" IS-LINUX)
+PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
+#+END_SRC
+** Alias
+#+BEGIN_SRC sh :tangle (to ".bashrc.d/2-alias.sh" IS-LINUX)
+alias syncthing-tunnel='ssh -L 9999:localhost:8384 fedora-nuc'
+#+END_SRC
+** NVM
+#+BEGIN_SRC sh :tangle (to ".bashrc.d/3-nvm.sh" IS-LINUX)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#+END_SRC
+** Rust
+#+BEGIN_SRC sh :tangle (to ".bashrc.d/4-rust.sh" IS-LINUX)
+. "$HOME/.cargo/env"
+#+END_SRC
+** .bash_profile
+#+BEGIN_SRC sh :tangle (to ".bash_profile" IS-LINUX)
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+#+END_SRC
 ** .bashrc
 #+BEGIN_SRC sh :tangle (to ".bashrc" IS-LINUX)
-# export QEMU_AUDIO_DRV=none
-# export PATH+=:$HOME/.local/bin:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
-
 # .bashrc
 
 # Source global definitions
@@ -52,18 +88,12 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-
-export ANDROID_HOME=$HOME/Android/Sdk
-export EDITOR=emacsclient
-
 # User specific environment
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
 then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
 export PATH
-
-PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
 
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
@@ -77,36 +107,7 @@ if [ -d ~/.bashrc.d ]; then
 	done
 fi
 
-function studio {
-	local directory="${1:-android}"
-	nohup studio "$directory" >/tmp/studio.out &
-}
-
-function webstorm {
-	local directory="${1:-.}"
-	nohup webstorm "$directory" >/tmp/webstorm.out &
-}
-
-function clion {
-	local directory="${1:-.}"
-	nohup clion "$directory" >/tmp/clion.out &
-}
-
-function goland {
-	local directory="${1:-.}"
-	nohup goland "$directory" >/tmp/goland.out &
-}
-
-
-
 unset rc
-source "$HOME/.cargo/env"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-alias syncthing-tunnel='ssh -L 9999:localhost:8384 fedora-nuc'
 #+END_SRC
 * Git
 ** .gitconfig
